@@ -160,11 +160,11 @@ PrFastTool/
 ![Interface Principal](assets/screenshot-main.png)
 *Interface principal do PrFastTool*
 
-![Remoção de Silêncio](assets/screenshot-silence.png)
-*Detecção e remoção automática de silêncio*
+![Aba Smart Tools](assets/screenshot-smarttools.png)
+*Nova funcionalidade: Smart Tools*
 
-![Criação de Subclips](assets/screenshot-subclip.png)
-*Criação em lote de subclips*
+![Pluse Mark](assets/screenshot-pulse.png)
+*Marcador de batidas da música*
 
 ---
 

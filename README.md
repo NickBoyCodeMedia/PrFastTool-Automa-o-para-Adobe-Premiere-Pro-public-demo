@@ -1,0 +1,1 @@
+# PrFastTool-Automa-o-para-Adobe-Premiere-Pro-public-demo

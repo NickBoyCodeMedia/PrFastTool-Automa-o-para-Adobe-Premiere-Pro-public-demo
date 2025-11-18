@@ -158,12 +158,15 @@ PrFastTool/
 ## 📸 Screenshots
 
 ![Interface Principal](assets/screenshot-main.png)
+
 *Interface principal do PrFastTool*
 
 ![Aba Smart Tools](assets/screenshot-smarttools.png)
+
 *Nova funcionalidade: Smart Tools*
 
 ![Pluse Mark](assets/screenshot-pulse.png)
+
 *Marcador de batidas da música*
 
 ---

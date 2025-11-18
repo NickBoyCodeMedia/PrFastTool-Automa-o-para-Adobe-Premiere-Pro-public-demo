@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Pr-FastTool</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 15px;
+            background: #2b2b2b;
+            color: #d1d1d1;
+            font-family: 'Montserrat', 'Segoe UI', 'Arial Black', 'Segoe UI', Arial, sans-serif;
+            font-size: 13px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #555;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #007acc;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .header .subtitle {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .tool-section {
+            background: #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+        }
+
+        .section-title {
+            color: #007acc;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 5px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .checkbox-option:hover {
+            background: rgba(0, 122, 204, 0.1);
+        }
+
+        .checkbox-option input {
+            margin-right: 8px;
+            accent-color: #007acc;
+        }
+
+        .checkbox-option label {
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .slider-container {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #3a3a3a;
+            border-radius: 6px;
+            border: 1px solid #555;
+        }
+
+        .slider-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d1d1d1;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .blur-value {
+            color: #007acc;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #555;
+            outline: none;
+            border-radius: 4px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #007acc;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #007acc;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #007acc, #005a99);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .primary-btn:hover {
+            background: linear-gradient(135deg, #005a99, #004080);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .primary-btn:active {
+            transform: translateY(0);
+        }
+
+        #log-container {
+            flex: 1;
+            background: #1a1a1a;
+            border-radius: 6px;
+            border: 1px solid #555;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            background: #333;
+            padding: 8px 12px;
+            border-bottom: 1px solid #555;
+            color: #999;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        #log {
+            flex: 1;
+            padding: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #d1d1d1;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-success {
+            background: #4caf50;
+        }
+
+        .status-error {
+            background: #f44336;
+        }
+
+        .status-info {
+            background: #2196f3;
+        }
+
+        /* Scrollbar customization */
+        #log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #log::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+
+        #log::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        #log::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        /* Estilos revisados para o sistema de abas */
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .tab-navigation {
+            display: flex;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tab-button {
+            background: #2a2a2a;
+            color: #999;
+            border: 1px solid #555;
+            border-bottom: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-right: 4px;
+            font-size: 12px;
+            transition: all 0.2s;
+            position: relative;
+            top: 1px;
+        }
+
+        .tab-button.active {
+            background: #333;
+            color: #007acc;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: #303030;
+            color: #d1d1d1;
+        }
+
+        .tab-contents {
+            border: 1px solid #555;
+            border-radius: 0 6px 6px 6px;
+            background: #333;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 15px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tool-section {
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 0;
+            border: none;
+        }
+
+        /* Estilos para elementos desabilitados */
+        .checkbox-option.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            position: relative;
+        }
+
+        .checkbox-option.disabled::after {
+            content: "Em breve";
+            position: absolute;
+            right: 5px;
+            font-size: 9px;
+            background-color: #555;
+            color: #ccc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .checkbox-option.disabled input,
+        .checkbox-option.disabled label {
+            cursor: not-allowed;
+        }
+
+        .number-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #444;
+        }
+
+        /* Estilos revisados para tooltips */
+        [data-tooltip] {
+            position: static;
+            cursor: pointer;
+        }
+        [data-tooltip]::after {
+            display: none !important;
+        }
+
+        .info-icon {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background-color: #555;
+            border-radius: 50%;
+            color: #fff;
+            text-align: center;
+            font-size: 10px;
+            line-height: 14px;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        /* Estilos para social icons */
+        .tab-social {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 10px;
+        }
+
+        .icon-link {
+            display: flex;
+            align-items: center;
+            color: #999;
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.2s;
+            padding: 3px 6px;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .icon-link:hover {
+            color: #d1d1d1;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+            filter: brightness(0.7);
+            transition: filter 0.2s;
+        }
+
+        .icon-link:hover .icon {
+            filter: brightness(1);
+        }
+
+        /* Estilos para modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background-color: #333;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #555;
+            border-radius: 6px;
+            width: 80%;
+            max-width: 500px;
+            color: #d1d1d1;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .close {
+            color: #999;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #d1d1d1;
+        }
+
+        .modal-content h2 {
+            color: #007acc;
+            margin-top: 0;
+        }
+
+        .modal-content h3 {
+            color: #ccc;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+        .modal-content ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+
+        .modal-content li {
+            margin-bottom: 5px;
+        }
+
+        /* Novo estilo para botão com input integrado */
+        .integrated-input-btn {
+            padding: 0 !important;
+            overflow: hidden;
+            position: relative;
+            height: auto !important;
+        }
+        
+        .integrated-input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 8px;
+        }
+        
+        .integrated-input-btn .btn-label {
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            margin-bottom: 6px;
+            width: 100%;
+        }
+        
+        .integrated-input-btn .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 90%;
+        }
+        
+        .integrated-input-btn input {
+            width: 40px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            padding: 3px 5px;
+            text-align: center;
+            height: 22px;
+        }
+        
+        .integrated-input-btn input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0);
+        }
+        
+        .integrated-input-btn .unit-label {
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 4px;
+            font-size: 12px;
+            user-select: none;
+        }
+
+        /* Problemas com o estilo do botão Set In/Out:
+         * 1. A altura mínima (min-height:45px) pode não ser suficiente para todos os layouts
+         * 2. O background do input-row (rgba(0, 0, 0, 0.15)) não tem contraste suficiente
+         * 3. A largura do input (40px) pode ser muito estreita para valores mais longos
+         * 4. O tamanho do botão não é exatamente igual aos outros botões
+         * 5. O campo numérico pode ser difícil de clicar por ser pequeno
+         */
+        .integrated-input-btn {
+            padding: 0 !important;
+            overflow: hidden;
+            position: relative;
+            height: auto !important;
+        }
+        
+        .integrated-input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 8px;
+        }
+        
+        .integrated-input-btn .btn-label {
+            font-weight: bold;
+            display: block;
+            text-align: center;
+            margin-bottom: 6px;
+            width: 100%;
+        }
+        
+        .integrated-input-btn .input-row {
+            display: flex; /* Organiza os elementos em linha */
+            align-items: center; /* Centraliza verticalmente os itens */
+            justify-content: center; /* Centraliza horizontalmente os itens */
+            margin-top: 0; /* Remove margem superior */
+            background: rgba(0, 0, 0, 0); /* Contraste baixo */
+            padding: 4px 8px; /* Espaçamento interno */
+            border-radius: 4px; /* Bordas arredondadas */
+            width: 10%; /* Largura relativa ao botão */
+        }
+        
+        .integrated-input-btn input {
+            width: 80px; /* Muito estreito para valores maiores */
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            padding: 3px 5px;
+            text-align: center;
+            height: 22px;
+        }
+        
+        .integrated-input-btn input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0);
+        }
+        
+        .integrated-input-btn .unit-label {
+            color: rgba(255, 255, 255, 0.8);
+            margin-left: 4px;
+            font-size: 12px;
+            user-select: none;
+        }
+
+
+        /* Estilos para o alerta padronizado */
+        .custom-alert {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+        }
+        
+        .alert-content {
+            width: 380px;
+            background: linear-gradient(to bottom, #333, #2a2a2a);
+            border: 1px solid #555;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            padding: 0;
+            overflow: hidden;
+            animation: alertFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes alertFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert-header {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+        
+        .alert-header.success {
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+        }
+        
+        .alert-header.error {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        
+        .alert-header.warning {
+            background: linear-gradient(135deg, #ff9800, #e65100);
+        }
+        
+        .alert-header.info {
+            background: linear-gradient(135deg, #007acc, #005a99);
+        }
+        
+        .alert-tool-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+        }
+        
+        .alert-header h3 {
+            margin: 0;
+            flex-grow: 1;
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .alert-body {
+            padding: 18px;
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .alert-body p {
+            margin: 0;
+        }
+        
+        .alert-footer {
+            padding: 12px 15px;
+            text-align: right;
+            background: rgba(0, 0, 0, 0.15);
+            border-top: 1px solid #444;
+        }
+        
+        .alert-footer .primary-btn {
+            width: auto;
+            min-width: 80px;
+            padding: 8px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>
+            <span style="color:#fff; letter-spacing:2px; font-size:22px; font-weight:900; text-shadow:0 2px 8px #007acc99, 0 1px 0 #000;">
+            <span style="color:#007acc;">Pr</span>-Fast<span style="color:#007acc;">Tool</span>
+            </span>
+        </h1>
+        <div class="subtitle">Professional Tools for Premiere Pro &mdash; by Nickboy3d · Code &amp; Media</div>
+    </div>
+
+    <div class="tabs-container">
+        <div class="tab-navigation">
+            <div class="tab-button active" data-tab="backfill">Back Fill</div>
+            <div class="tab-button" data-tab="verticalstack">Vertical Stack</div>
+            <div class="tab-button" data-tab="smarttools">Smart Tools</div>
+            
+            <!-- Social links - modificados para usar JavaScript ao invés de links diretos -->
+            <div class="tab-social">
+                <button class="icon-link" id="instagramBtn">
+                    <img src="../assets/insta-icon.png" alt="Instagram" class="icon">
+                    <span>Instagram</span>
+                </button>
+                <button class="icon-link" id="youtubeBtn">
+                    <img src="../assets/youtube-icon.png" alt="YouTube" class="icon">
+                    <span>YouTube</span>
+                </button>
+                <button id="aboutBtn" class="icon-link">
+                    <span class="icon">❗</span>
+                    <span>Sobre</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="tab-contents">
+            <div class="tab-content active" id="backfill-tab">
+                <div class="tool-section">
+                    <div class="section-title">Back Fill Options <span class="info-icon" data-tooltip="Duplica clips para a trilha inferior e aplica efeitos">?</span></div>
+                    
+                    <div class="options-grid">
+                        <div class="checkbox-option">
+                            <input type="checkbox" id="addBlur" checked>
+                            <label for="addBlur" data-tooltip="Adiciona efeito de desfoque ao clip duplicado">🌀 Blur Effect</label>
+                        </div>
+                        <div class="checkbox-option disabled">
+                            <input type="checkbox" id="addAnimation" disabled>
+                            <label for="addAnimation" data-tooltip="Adiciona animação sutil ao clip duplicado">🎬 Subtle Animation</label>
+                        </div>
+                        <div class="checkbox-option disabled">
+                            <input type="checkbox" id="addNest" disabled>
+                            <label for="addNest" data-tooltip="Cria um nest com o clip original e o duplicado">📦 Auto Nest</label>
+                        </div>
+                        <div class="checkbox-option disabled">
+                            <input type="checkbox" id="addAdjustment" disabled>
+                            <label for="addAdjustment" data-tooltip="Adiciona uma camada de ajuste acima">🎨 Adjustment Layer</label>
+                        </div>
+                    </div>
+
+                    <div class="slider-container">
+                        <label for="blurIntensity" class="slider-label" data-tooltip="Controla a intensidade do efeito de desfoque">
+                            Blur Intensity: <span class="blur-value" id="blurValue">50</span>%
+                        </label>
+                        <input type="range" id="blurIntensity" min="0" max="100" value="50" 
+                               oninput="document.getElementById('blurValue').textContent = this.value">
+                    </div>
+
+                    <button id="backFillBtn" class="primary-btn" data-tooltip="Processa os clips selecionados na timeline">
+                        ▶ Execute Back Fill
+                    </button>
+                </div>
+            </div>
+
+            <div class="tab-content" id="verticalstack-tab">
+                <div class="tool-section">
+                    <div class="section-title">Vertical Stack Clips <span class="info-icon" data-tooltip="Empilha verticalmente 3 clips selecionados no painel Project">?</span></div>
+                    
+                    <div class="slider-container">
+                        <label for="vsScaleSlider" class="slider-label" data-tooltip="Define a escala dos clips empilhados">
+                            Scale: <span class="blur-value" id="vsScaleValue">56</span>%
+                        </label>
+                        <input type="range" id="vsScaleSlider" min="1" max="100" value="56" 
+                               oninput="document.getElementById('vsScaleValue').textContent = this.value">
+                    </div>
+                    
+                    <div class="number-input-container">
+                        <div class="number-label" data-tooltip="Define o espaçamento entre os clips">Gap Between Clips (pixels):</div>
+                        <div class="number-controls">
+                            <button class="number-button disabled" id="decreaseGap" disabled>-</button>
+                            <input type="text" class="number-value" id="gapValue" value="0" readonly>
+                            <button class="number-button" id="increaseGap">+</button>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-option">
+                        <input type="checkbox" id="maintainAspectRatio" checked>
+                        <label for="maintainAspectRatio" data-tooltip="Mantém as proporções originais dos clips">🔒 Maintain Aspect Ratio</label>
+                    </div>
+
+                    <button id="verticalStackBtn" class="primary-btn" data-tooltip="Selecione exatamente 3 clips no painel Project antes de executar">
+                        ▶ Stack Clips Vertically
+                    </button>
+                </div>
+            </div>
+
+            <!-- RENOMEADA ABA: Smart Tools -->
+            <div class="tab-content" id="smarttools-tab">
+                <div class="tool-section">
+                    <div class="section-title" style="display: flex; align-items: center;">
+                        Smart Tools
+                        <span class="info-icon" id="smartToolsInfoBtn" style="margin-left:8px; cursor:pointer;">?</span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+                        <button class="primary-btn" id="pulseMarkBtn" style="flex:1;">🥁 PulseMark</button>
+                        <button class="primary-btn" id="voidTrimBtn" style="flex:1;">✂️ VoidTrim</button>
+                        <button class="primary-btn" id="randomizeClipsBtn" style="flex:1;">🔀 Randomize Clips</button>
+                        
+                        <!-- Botão Set In/Out redesenhado com campo de duração integrado -->
+                        <div style="flex:1;">  <!-- Container com flex:1 para garantir largura igual aos outros botões -->
+                            <div style="display:flex; flex-direction:column; height:100%;">
+                                <div class="input-row" style="margin-bottom:5px; background:#3a3a3a; border-radius:4px; padding:5px; display:flex; justify-content:center;">
+                                    <input type="number" id="inOutDuration" value="2.0" min="0.1" max="300" step="0.1" style="width:60px; background:#444; border:1px solid #555; color:#fff; border-radius:3px; padding:3px 5px; text-align:center;">
+                                    <span style="margin-left:4px; line-height:22px; color:#ccc;">segundos</span>
+                                </div>
+                                <button class="primary-btn" id="setInOutBtn" style="flex-grow:1;">
+                                    <img src="../assets/icon-setInOut.svg" alt="Set In/Out Icon" style="width:16px; height:16px; margin-right:6px; vertical-align:middle;"> Set In/Out
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="primary-btn" id="deleteAudioMarkersBtn" style="flex:1;">🧹 Delete Markers</button>
+                        <button class="primary-btn" id="clearInOutBtn" style="flex:1;">🧽 Clear In/Out</button>
+                    </div>
+                    <div id="smartToolsInfoBox" style="display:none; background:#23273a; color:#e0e6f8; border:1px solid #3a4a6a; border-radius:8px; padding:14px 18px; font-size:12px; margin-bottom:10px; margin-top:2px; box-shadow:0 4px 16px rgba(0,0,0,0.18);">
+                        Ferramentas rápidas para manipulação de clips no painel Project e na timeline.<br>
+                        <b>PuleMark</b>: Marca batidas automaticamente em arquivos de áudio.<br>
+                        <b>VoidTrim</b>: Remove silêncios detectados em arquivos de áudio.<br>
+                        <b>Randomize Clips</b>: Embaralha os clips selecionados e coloca em nova sequência.<br>
+                        <b>Set In/Out</b>: Define pontos In & Out dos clips selecionados.<br>
+                        <b>Delete Markers</b>: Remove todos os markers dos clips de áudio selecionados.<br>
+                        <b>Clear In/Out</b>: Limpa pontos In & Out dos clips selecionados.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="log-container">
+        <div class="log-header">
+            <span class="status-indicator status-info"></span>
+            Execution Log
+        </div>
+        <div id="log">Pr-FastTool initialized successfully ✓
+Ready to process your clips...</div>
+    </div>
+
+    <!-- Modal About -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span id="closeModal" class="close">&times;</span>
+            <h2>Pr-FastTool v1.8.1 beta</h2>
+            <p>Ferramenta profissional para agilizar o fluxo de trabalho no Adobe Premiere Pro.</p>
+            <h3>Recursos</h3>
+            <ul>
+                <li>Back Fill - Duplicação de clips com efeitos</li>
+                <li>Vertical Stack - Empilhamento vertical de 3 clips</li>
+                <li>Interface otimizada com sistema de abas</li>
+                <li>Log de execução detalhado</li>
+            </ul>
+            <h3>Desenvolvedor</h3>
+            <p>NickBoy3d Code & Media</p>
+            <h3>Contato</h3>
+            <a href="https://nickboy3d.artstation.com/" target="_blank" class="icon-link">https://nickboy3d.artstation.com/</a>
+        </div>
+    </div>
+
+<!-- Alerta personalizado padronizado -->
+<div id="prFastToolAlert" class="modal custom-alert">
+    <div class="modal-content alert-content">
+        <div class="alert-header">
+            <img id="alertIcon" src="../assets/icon-success.png" class="alert-tool-icon">
+            <h3 id="alertTitle">PrFastTool</h3>
+            <span id="closeAlert" class="close">&times;</span>
+        </div>
+        <div class="alert-body">
+            <p id="alertMessage"></p>
+        </div>
+        <div class="alert-footer">
+            <button id="alertOkBtn" class="primary-btn">OK</button>
+        </div>
+    </div>
+</div>
+
+    <script src="../libs/CSInterface.js"></script>
+    <!-- Adicionar o utilitário CEP-fix para resolver problemas de retorno undefined -->
+    <script src="../js/cep-fix.js"></script>
+    <script>
+        const csInterface = new CSInterface();
+        const path = require('path'); // ADICIONE ESTA LINHA
+        // SUBSTITUA o bloco de require por este com caminho absoluto:
+        let pulsemark = null;
+        let voidtrim = null;
+
+        try {
+            const extensionPath = csInterface.getSystemPath('extension');
+            log('📁 Extension path: ' + extensionPath);
+            
+            const pulsePath = extensionPath + '/node/pulsemark.js';
+            log('🔍 Tentando carregar pulsemark de: ' + pulsePath);
+            pulsemark = require(pulsePath);
+            log('✅ pulsemark carregado: ' + typeof pulsemark);
+            log('✅ pulsemark.analyzeAudioAndAddMarkers: ' + typeof pulsemark.analyzeAudioAndAddMarkers);
+        } catch (pulseErr) {
+            log('❌ Erro ao carregar pulsemark: ' + pulseErr.message, true);
+        }
+
+        try {
+            const extensionPath = csInterface.getSystemPath('extension');
+            const voidPath = extensionPath + '/node/voidtrim.js';
+            log('🔍 Tentando carregar voidtrim de: ' + voidPath);
+            voidtrim = require(voidPath);
+            log('✅ voidtrim carregado: ' + typeof voidtrim);
+            log('✅ voidtrim.removeSilence: ' + typeof voidtrim.removeSilence);
+        } catch (voidErr) {
+            log('❌ Erro ao carregar voidtrim: ' + voidErr.message, true);
+        }
+
+        try {
+            log('🔍 Testando require do node-wav...');
+            const wavTest = require('node-wav');
+            log('✅ node-wav disponível: ' + typeof wavTest);
+        } catch (wavErr) {
+            log('❌ Erro com node-wav: ' + wavErr.message, true);
+        }
+
+        log('📊 Status final:');
+        log('  pulsemark: ' + (pulsemark ? 'CARREGADO' : 'FALHOU'));
+        log('  voidtrim: ' + (voidtrim ? 'CARREGADO' : 'FALHOU'));
+
+        function log(message, isError = false) {
+            const logDiv = document.getElementById('log');
+            if (logDiv) {
+                if (logDiv.innerHTML.includes("Pr-FastTool initialized")) {
+                    logDiv.innerHTML = "";
+                }
+
+                const time = new Date().toLocaleTimeString();
+                const icon = isError ? '❌' : '✅';
+                const entry = document.createElement('div');
+                entry.innerHTML = `<span style="color: #666">[${time}]</span> ${icon} ${message}`;
+                entry.style.color = isError ? '#ff6b6b' : '#d1d1d1';
+                entry.style.marginBottom = '2px';
+                
+                if (logDiv.firstChild) {
+                    logDiv.insertBefore(entry, logDiv.firstChild);
+                } else {
+                    logDiv.appendChild(entry);
+                }
+
+                // Auto scroll to top
+                logDiv.scrollTop = 0;
+            }
+        }
+
+        function logWarning(message) {
+            const logDiv = document.getElementById('log');
+            if (logDiv) {
+                const time = new Date().toLocaleTimeString();
+                const entry = document.createElement('div');
+                entry.innerHTML = `<span style="color: #666">[${time}]</span> ⚠️ ${message}`;
+                entry.style.color = '#ffa726';
+                entry.style.marginBottom = '2px';
+                
+                if (logDiv.firstChild) {
+                    logDiv.insertBefore(entry, logDiv.firstChild);
+                } else {
+                    logDiv.appendChild(entry);
+                }
+                logDiv.scrollTop = 0;
+            }
+        }
+
+        function executeBackFill() {
+            log('🚀 Starting Back Fill process...');
+            
+            const options = {
+                addBlur: document.getElementById('addBlur').checked,
+                blurIntensity: document.getElementById('blurIntensity').value,
+                // Estas opções estão desabilitadas na interface, então vamos definir como false
+                addAnimation: false, // document.getElementById('addAnimation').checked,
+                addNest: false, // document.getElementById('addNest').checked,
+                addAdjustment: false // document.getElementById('addAdjustment').checked
+            };
+            
+            // Show options in a nice format
+            const optionsStr = [
+                options.addBlur ? `Blur: ${options.blurIntensity}%` : null
+                // Removendo opções desabilitadas do log
+                // options.addAnimation ? 'Animation' : null,
+                // options.addNest ? 'Nest' : null,
+                // options.addAdjustment ? 'Adjustment' : null
+            ].filter(Boolean).join(', ');
+            
+            log(`⚙️ Options: ${optionsStr || 'Default processing'}`);
+            
+            const script = 'executeBackFill(' + JSON.stringify(options) + ');';
+            
+            csInterface.evalScript(script, function(result) {
+                if (result && result !== "EvalScript error.") {
+                    try {
+                        const resultObj = JSON.parse(result);
+                        
+                        // Log da mensagem principal
+                        if (resultObj.success) {
+                            log(`🎉 ${resultObj.message}`);
+                        } else {
+                            log(`${resultObj.message}`, true);
+                        }
+                        
+                        // Log dos erros detalhados
+                        if (resultObj.errors && resultObj.errors.length > 0) {
+                            resultObj.errors.forEach(error => {
+                                if (resultObj.success) {
+                                    logWarning(error);
+                                } else {
+                                    log(`💡 ${error}`, true);
+                                }
+                            });
+                        }
+                        
+                        // Log de estatísticas se houver processamento
+                        if (resultObj.processedClips > 0) {
+                            let statsMsg = `📊 Stats: ${resultObj.processedClips} processed, ${resultObj.successCount} successful, ${resultObj.failCount} failed`;
+                            if (resultObj.nestedCount > 0) {
+                                statsMsg += `, ${resultObj.nestedCount} nested`;
+                            }
+                            log(statsMsg);
+                        }
+                        
+                    } catch (e) {
+                        log(`✨ ${result}`);
+                    }
+                } else {
+                    log('💥 Script execution failed - Verifique se o Premiere Pro está aberto e com um projeto ativo', true);
+                    log('💡 Dica: Abra um projeto e uma sequência antes de usar o Back Fill', true);
+                }
+            });
+        }
+
+        // Sistema de abas
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remover classe ativa de todos os botões
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // Adicionar classe ativa ao botão clicado
+                    button.classList.add('active');
+                    
+                    // Mostrar o conteúdo da aba correspondente
+                    const tabName = button.getAttribute('data-tab');
+                    
+                    // Esconder todos os conteúdos
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    // Mostrar conteúdo da aba selecionada
+                    document.getElementById(tabName + '-tab').classList.add('active');
+                });
+            });
+        }
+
+        // Controle do gap entre clips - modificando para desabilitar o botão de diminuir
+        function setupGapControls() {
+            const decreaseBtn = document.getElementById('decreaseGap');
+            const increaseBtn = document.getElementById('increaseGap');
+            const gapValue = document.getElementById('gapValue');
+            
+            // Função para decrease desabilitada
+            // decreaseBtn.addEventListener('click', () => {
+            //     let value = parseInt(gapValue.value);
+            //     if (value > 0) {
+            //         gapValue.value = value - 1;
+            //     }
+            // });
+            
+            increaseBtn.addEventListener('click', () => {
+                let value = parseInt(gapValue.value);
+                gapValue.value = value + 1;
+            });
+        }
+        
+        // Função para executar o Vertical Stack
+        function executeVerticalStack() {
+            log('🚀 Starting Vertical Stack process...');
+            
+            const options = {
+                scale: parseInt(document.getElementById('vsScaleSlider').value),
+                gap: parseInt(document.getElementById('gapValue').value),
+                maintainAspectRatio: document.getElementById('maintainAspectRatio').checked
+            };
+            
+            log(`⚙️ Options: Scale ${options.scale}%, Gap ${options.gap}px, Maintain Aspect Ratio: ${options.maintainAspectRatio}`);
+            
+            // Chamar a função no ExtendScript
+            const script = 'executeVerticalStackClips(' + JSON.stringify(options) + ');';
+            
+            csInterface.evalScript(script, function(result) {
+                if (result && result !== "EvalScript error.") {
+                    try {
+                        const resultObj = JSON.parse(result);
+                        
+                        // Log da mensagem principal
+                        if (resultObj.success) {
+                            log(`🎉 ${resultObj.message}`);
+                        } else {
+                            log(`${resultObj.message}`, true);
+                        }
+                        
+                        // Log dos erros detalhados
+                        if (resultObj.errors && resultObj.errors.length > 0) {
+                            resultObj.errors.forEach(error => {
+                                log(`💡 ${error}`, true);
+                            });
+                        }
+                        
+                        // Mostrar estatísticas
+                        if (resultObj.processedClips > 0) {
+                            log(`📊 Stats: ${resultObj.processedClips} processed, ${resultObj.failedClips || 0} failed`);
+                        }
+                    } catch (e) {
+                        log(`✨ ${result}`);
+                    }
+                } else {
+                    log('💥 Script execution failed - Verifique se o Premiere Pro está aberto', true);
+                    log('💡 Dica: Selecione no máximo 3 clips no painel Project', true);
+                }
+            });
+        }
+
+        // Modal About
+        function setupAboutModal() {
+            const aboutBtn = document.getElementById('aboutBtn');
+            const aboutModal = document.getElementById('aboutModal');
+            const closeModalBtn = document.getElementById('closeModal');
+            
+            // Abrir modal
+            aboutBtn.addEventListener('click', function() {
+                aboutModal.style.display = 'block';
+            });
+            
+            // Fechar modal
+            closeModalBtn.addEventListener('click', function() {
+                aboutModal.style.display = 'none';
+            });
+            
+            // Fechar quando clicar fora do modal
+            window.addEventListener('click', function(event) {
+                if (event.target == aboutModal) {
+                    aboutModal.style.display = 'none';
+                }
+            });
+        }
+
+        // Função para abrir URLs externos usando a API do CEP
+        function openExternalURL(url) {
+            if (csInterface && typeof csInterface.openURLInDefaultBrowser === 'function') {
+                csInterface.openURLInDefaultBrowser(url);
+            } else {
+                console.error('Não foi possível abrir a URL: Interface CEP não disponível');
+                // Fallback para navegadores ou testes
+                window.open(url, '_blank');
+            }
+        }
+        
+        // Configurar links sociais
+        function setupSocialLinks() {
+            // Instagram
+            document.getElementById('instagramBtn').addEventListener('click', function() {
+                openExternalURL('https://www.instagram.com/nickboy3d/');
+            });
+            
+            // YouTube
+            document.getElementById('youtubeBtn').addEventListener('click', function() {
+                openExternalURL('https://www.youtube.com/@NickBoy3d');
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            log('🔧 DOM loaded successfully');
+
+            // Add event listener to button
+            document.getElementById('backFillBtn').addEventListener('click', executeBackFill);
+
+            // Load hostscript
+            const extensionPath = csInterface.getSystemPath('extension');
+            const jsxPath = extensionPath + '/jsx/hostscript.jsx';
+            
+            log('🔍 Tentando carregar hostscript de: ' + jsxPath);
+            
+            // Primeiro verificar se o arquivo existe
+            const fs = require('fs');
+            if (fs.existsSync(jsxPath)) {
+                log('✅ Arquivo hostscript.jsx encontrado');
+                
+                csInterface.evalScript(`$.evalFile("${jsxPath.replace(/\\/g, '\\\\')}")`, function(result) {
+                    log('📥 Resposta do carregamento do hostscript:');
+                    log('  - Tipo: ' + typeof result);
+                    log('  - Conteúdo: ' + result);
+                    
+                    if (result && result !== "EvalScript error.") {
+                        log('✅ ExtendScript engine ready');
+                        
+                        // Testar se a função existe
+                        csInterface.evalScript('typeof getSelectedAudioFilePath', function(testResult) {
+                            log('🔍 Testando função getSelectedAudioFilePath: ' + testResult);
+                            if (testResult === 'function') {
+                                log('✅ Função getSelectedAudioFilePath disponível');
+                            } else {
+                                log('❌ Função getSelectedAudioFilePath não encontrada', true);
+                            }
+                        });
+                    } else {
+                        log('❌ Erro ao carregar hostscript: ' + result, true);
+                        
+                        // Tentar carregar diretamente o conteúdo
+                        try {
+                            const jsxContent = fs.readFileSync(jsxPath, 'utf8');
+                            log('🔍 Tentando carregar conteúdo direto do JSX...');
+                            
+                            csInterface.evalScript(jsxContent, function(directResult) {
+                                log('📥 Resultado do carregamento direto: ' + directResult);
+                                if (directResult && directResult !== "EvalScript error.") {
+                                    log('✅ Hostscript carregado via conteúdo direto');
+                                } else {
+                                    log('❌ Falha também no carregamento direto', true);
+                                }
+                            });
+                        } catch (readErr) {
+                            log('❌ Erro ao ler arquivo JSX: ' + readErr.message, true);
+                        }
+                    }
+                });
+            } else {
+                log('❌ Arquivo hostscript.jsx não encontrado em: ' + jsxPath, true);
+            }
+
+            log('🎯 Ready for Back Fill operations');
+
+            // Inicializar sistema de abas
+            setupTabs();
+            
+            // Inicializar controles de gap
+            setupGapControls();
+            
+            // Event listener para botão Vertical Stack
+            document.getElementById('verticalStackBtn').addEventListener('click', executeVerticalStack);
+
+            // Inicializar modal about
+            setupAboutModal();
+
+            // Inicializar links sociais
+            setupSocialLinks();
+            
+            // Tornar a função openSmartToolsTab acessível globalmente
+            window.openSmartToolsTab = openSmartToolsTab;
+            
+            // Event listeners para os botões da aba Smart Tools
+            document.getElementById('pulseMarkBtn').addEventListener('click', function() {
+                log('🥁 [ETAPA 1] PulseMark button clicado');
+                
+                // ETAPA 2: Testar se as dependências estão carregadas
+                log('🔍 [ETAPA 2] Verificando dependências...');
+                log('  - pulsemark module: ' + (pulsemark ? 'DISPONÍVEL' : 'INDISPONÍVEL'));
+                log('  - csInterface: ' + (csInterface ? 'DISPONÍVEL' : 'INDISPONÍVEL'));
+                log('  - extensionPath: ' + extensionPath);
+                
+                if (!pulsemark) {
+                    log('❌ [ERRO ETAPA 2] Módulo pulsemark não carregado', true);
+                    return;
+                }
+                
+                // ETAPA 3: Executar o script JSX para obter caminho do áudio
+                log('🔍 [ETAPA 3] Chamando getSelectedAudioFilePath() no ExtendScript...');
+                const script = `getSelectedAudioFilePath();`;
+                
+                csInterface.evalScript(script, function(audioResult) {
+                    log('📥 [ETAPA 4] Resposta do ExtendScript recebida');
+                    log('  - Tipo da resposta: ' + typeof audioResult);
+                    log('  - Conteúdo: ' + audioResult);
+                    
+                    if (!audioResult || audioResult === "EvalScript error.") {
+                        log('❌ [ERRO ETAPA 4] Script ExtendScript falhou', true);
+                        log('💡 Possíveis causas: Premiere não aberto, nenhuma sequência ativa, nenhum clip selecionado', true);
+                        return;
+                    }
+                    
+                    // ETAPA 5: Parse da resposta JSON
+                    log('🔍 [ETAPA 5] Fazendo parse da resposta JSON...');
+                    try {
+                        const audioInfo = JSON.parse(audioResult);
+                        log('✅ [ETAPA 5] JSON parseado com sucesso');
+                        log('  - success: ' + audioInfo.success);
+                        log('  - message: ' + audioInfo.message);
+                        
+                        if (audioInfo.success) {
+                            // ETAPA 6: Arquivo encontrado
+                            const filePath = audioInfo.filePath;
+                            const fileName = audioInfo.fileName;
+                            
+                            log(`✅ [ETAPA 6] Arquivo válido encontrado`);
+                            log(`  - Nome: ${fileName}`);
+                            log(`  - Caminho: ${filePath}`);
+                            
+                            // ETAPA 7: Chamar análise de áudio
+                            log('🔍 [ETAPA 7] Iniciando análise de áudio...');
+                            const bpm = 120; // BPM padrão
+                            
+                            pulsemark.analyzeAudioAndAddMarkers(filePath, bpm, function(result) {
+                                if (result.success) {
+                                    // Atualizar o valor para o BPM detectado
+                                    if (result.detectedBpm) {
+                                        log(`🎵 BPM detectado: ${result.detectedBpm}`);
+                                    }
+                                    
+                                    // Adicionar marcadores à timeline
+                                    csInterface.evalScript(`addBeatsToTimeline(${JSON.stringify(result.beatTimes)})`, function(res) {
+                                        log('📥 [ETAPA 10] Resposta do addBeatsToTimeline recebida');
+                                        log('  - Tipo: ' + typeof res);
+                                        log('  - Conteúdo: ' + res);
+                                        
+                                        if (res && res !== "EvalScript error.") {
+                                            try {
+                                                const markerResult = JSON.parse(res);
+                                                if (markerResult.success) {
+                                                    log(`✅ [ETAPA 10] Marcadores adicionados: ${markerResult.markersAdded} marcadores`);
+                                                    
+                                                    // Mostrar alerta de sucesso com detalhes da operação
+                                                    const bpmMessage = result.detectedBpm ? `\nBPM detectado: ${result.detectedBpm}` : '';
+                                                    showSuccessAlert(
+                                                        "PulseMark", 
+                                                        `<span style="font-size:15px">✅ <b>PulseMark concluído!</b></span><br><br>
+                                                         <b>${markerResult.markersAdded}</b> marcadores adicionados com sucesso.<br>
+                                                         ${result.detectedBpm ? '<b>BPM detectado:</b> ' + result.detectedBpm : ''}`,
+                                                         "../assets/icon-pulsemark.png"
+                                                    );
+                                                } else {
+                                                    log(`⚠️ [ETAPA 10] Falha ao adicionar marcadores: ${markerResult.message}`, true);
+                                                    
+                                                    // Alerta de erro
+                                                    alert(`⚠️ Falha ao adicionar marcadores: ${markerResult.message}`);
+                                                }
+                                            } catch (e) {
+                                                log(`⚠️ [ETAPA 10] Resposta não é JSON válido: ${e.message}`, true);
+                                                log(`  - Resposta original: ${res}`);
+                                                
+                                                // Alerta de erro no parsing
+                                                alert(`⚠️ Erro ao processar resposta: ${e.message}`);
+                                            }
+                                        } else {
+                                            log('❌ [ERRO ETAPA 10] ExtendScript falhou ao adicionar marcadores', true);
+                                            
+                                            // Alerta de erro no ExtendScript
+                                            alert('❌ Falha ao adicionar marcadores à timeline.');
+                                        }
+                                    });
+                                } else {
+                                    log(`❌ [ERRO ETAPA 8] Falha na análise: ${result.message}`, true);
+                                }
+                            });
+                        } else {
+                            log(`❌ [ERRO ETAPA 6] ${audioInfo.message}`, true);
+                            log('💡 Dicas: Selecione um clip de áudio na timeline, certifique-se que há uma sequência ativa', true);
+                        }
+                    } catch (e) {
+                        log('❌ [ERRO ETAPA 5] Erro ao fazer parse do JSON: ' + e.message, true);
+                        log('  - Resposta original: ' + audioResult, true);
+                    }
+                });
+            });
+            
+            document.getElementById('voidTrimBtn').addEventListener('click', function() {
+                log('✂️ Iniciando VoidTrim...');
+                const script = `getSelectedAudioFilePath();`;
+                
+                csInterface.evalScript(script, function(audioPath) {
+                    if (audioPath && audioPath !== "EvalScript error." && audioPath !== '""') {
+                        try {
+                            const audioInfo = JSON.parse(audioPath);
+                            
+                            if (audioInfo.success) {
+                                const filePath = audioInfo.filePath;
+                                const fileName = audioInfo.fileName;
+                                
+                                log(`🎵 Arquivo selecionado: ${fileName}`);
+                                log(`📁 Caminho: ${filePath}`);
+                                
+                                if (voidtrim) {
+                                    const threshold = -30; // dB
+                                    const minSilenceDur = 0.5; // segundos
+                                    
+                                    log(`🔇 Analisando silêncio com threshold=${threshold}dB e duração mínima=${minSilenceDur}s`);
+                                    
+                                    voidtrim.removeSilence(filePath, threshold, minSilenceDur, function(result) {
+                                        if (result.success) {
+                                            log(`✅ ${result.message}`);
+                                            
+                                            if (result.silenceSegments.length > 0) {
+                                                result.silenceSegments.forEach((segment, index) => {
+                                                    log(`🔇 Silêncio ${index + 1}: ${segment.start.toFixed(2)}s - ${segment.end.toFixed(2)}s (${segment.duration.toFixed(2)}s)`);
+                                                });
+                                                
+                                                // Enviar os segmentos para o JSX
+                                                const jsxScript = `removeSilenceSegments(${JSON.stringify(result.silenceSegments)});`;
+                                                csInterface.evalScript(jsxScript, function(jsxResult) {
+                                                    if (jsxResult && jsxResult !== "EvalScript error.") {
+                                                        log(`✂️ ${jsxResult}`);
+                                                    } else {
+                                                        log('💥 Erro ao processar silêncio no JSX', true);
+                                                    }
+                                                });
+                                            } else {
+                                                log('🎵 Nenhum segmento de silêncio encontrado com os parâmetros atuais');
+                                            }
+                                        } else {
+                                            log(`❌ ${result.message}`, true);
+                                        }
+                                    });
+                                } else {
+                                    log('❌ Módulo VoidTrim não disponível', true);
+                                }
+                            } else {
+                                log(`❌ ${audioInfo.message}`, true);
+                                log('💡 Selecione um clip de áudio na timeline', true);
+                            }
+                        } catch (e) {
+                            log('❌ Erro ao processar informações do áudio: ' + e.message, true);
+                        }
+                    } else {
+                        log('💥 Nenhum arquivo de áudio selecionado ou arquivo não acessível', true);
+                        log('💡 Selecione um clip de áudio na timeline antes de usar o VoidTrim', true);
+                    }
+                });
+            });
+            
+            // Implementação do botão Randomize Clips
+            document.getElementById('randomizeClipsBtn').addEventListener('click', function() {
+                log('🔀 Iniciando Randomize Clips...');
+                
+                const randomizeJsxPath = extensionPath + '/jsx/randomizeClips.jsx';
+                
+                try {
+                    const fs = require('fs');
+                    if (fs.existsSync(randomizeJsxPath)) {
+                        log('✅ Script randomizeClips.jsx encontrado, executando...');
+                        
+                        // Carregar e executar o script JSX
+                        csInterface.evalScript(`$.evalFile("${randomizeJsxPath.replace(/\\/g, '\\\\')}")`, function(result) {
+                            if (result && result !== "EvalScript error.") {
+                                log('✅ Randomize Clips executado com sucesso!');
+                                
+                                // Extrair informações relevantes do resultado
+                                let clipCount = "vários";
+                                let newSeqName = "";
+                                
+                                // Tentar extrair o nome da sequência e contagem de clipes do resultado
+                                const seqNameMatch = result.match(/Nova sequência: ([^\.]+)/);
+                                if (seqNameMatch && seqNameMatch[1]) {
+                                    newSeqName = seqNameMatch[1];
+                                }
+                                
+                                const clipCountMatch = result.match(/Total de clipes coletados para randomização: (\d+)/);
+                                if (clipCountMatch && clipCountMatch[1]) {
+                                    clipCount = clipCountMatch[1];
+                                }
+                                
+                                log(result);
+                                
+                                // Mostrar alerta personalizado de sucesso
+                                showSuccessAlert(
+                                    "Randomize Clips", 
+                                    `<span style="font-size:15px">✅ <b>Randomização concluída!</b></span><br><br>
+                                    <b>${clipCount}</b> clipes foram reorganizados aleatoriamente.<br>
+                                    Nova sequência: <b>${newSeqName}</b><br><br>
+                                    <span style="color:#ccc; font-size:12px;">Recomendado: revise manualmente a timeline.</span>`,
+                                    "../assets/icon-randomize.png"
+                                );
+                                
+                            } else {
+                                log('❌ Erro ao executar Randomize Clips', true);
+                                log('💡 Verifique se há clipes selecionados na sequência ativa', true);
+                                
+                                // Alerta personalizado de erro
+                                showErrorAlert(
+                                    "Randomize Clips",
+                                    `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                    Não foi possível randomizar os clipes.<br><br>
+                                    <span style="color:#ffcc99; font-size:13px;">💡 Verifique se há clipes selecionados na sequência ativa.</span>`,
+                                    "../assets/icon-randomize.png"
+                                );
+                            }
+                        });
+                    } else {
+                        log('❌ Script randomizeClips.jsx não encontrado em: ' + randomizeJsxPath, true);
+                        
+                        // Alerta personalizado para script não encontrado
+                        showErrorAlert(
+                            "Erro no Sistema",
+                            `<span style="font-size:15px">❌ <b>Arquivo não encontrado</b></span><br><br>
+                            O arquivo de script não foi encontrado:<br>
+                            <code>${randomizeJsxPath}</code><br><br>
+                            Verifique a instalação da extensão.`,
+                            "../assets/icon-error.png"
+                        );
+                    }
+                } catch (e) {
+                    log('❌ Erro ao verificar script: ' + e.message, true);
+                    
+                    // Alerta personalizado para erro genérico
+                    showErrorAlert(
+                        "Erro no Sistema",
+                        `<span style="font-size:15px">❌ <b>Erro interno</b></span><br><br>
+                        A função "Randomize Clips" encontrou um erro:<br>
+                        <code>${e.message}</code>`,
+                        "../assets/icon-error.png"
+                    );
+                }
+            });
+            
+            // Implementação do botão Set In/Out - VERSÃO SIMPLIFICADA E DIRETA
+            document.getElementById('setInOutBtn').addEventListener('click', function() {
+                log('⏩ Iniciando Set In/Out...');
+                
+                const extensionPath = csInterface.getSystemPath('extension');
+                const setInOutJsxPath = extensionPath + '/jsx/setInOut.jsx';
+                
+                try {
+                    const fs = require('fs');
+                    if (fs.existsSync(setInOutJsxPath)) {
+                        log('✅ Script setInOut.jsx encontrado, executando...');
+                        
+                        // Obter duração do input separado
+                        const duration = parseFloat(document.getElementById('inOutDuration').value) || 2.0;
+                        log(`⏱️ Duração definida: ${duration}s`);
+                        
+                        // Chamar a função apenas no clique do botão
+                        const jsxCode = `
+                            $.evalFile("${setInOutJsxPath.replace(/\\/g, '\\\\')}");
+                            
+                            // Verificar se há itens selecionados primeiro
+                            var selection = app.getCurrentProjectViewSelection();
+                            if (!selection || selection.length === 0) {
+                                '{"status":"erro", "mensagem":"Nenhum clip selecionado no painel Project."}';
+                            } else {
+                                // Executar a função com a duração especificada
+                                try {
+                                    // Agora sabemos que o nome da função é executarSetInOut
+                                    var result = executarSetInOut(${duration});
+                                    
+                                    if (typeof result === "object") {
+                                        JSON.stringify(result);
+                                    } else if (result === true) {
+                                        '{"status":"sucesso", "mensagem":"Pontos In/Out aplicados com sucesso."}';
+                                    } else {
+                                        '{"status":"erro", "mensagem":"Falha ao aplicar pontos In/Out."}';
+                                    }
+                                } catch(e) {
+                                    '{"status":"erro", "mensagem":"Erro ao executar: ' + e.message + '"}';
+                                }
+                            }
+                        `;
+                        
+                        csInterface.evalScript(jsxCode, function(resultStr) {
+                            // Verificar se temos uma resposta válida
+                            if (!resultStr || resultStr === "undefined" || resultStr === "EvalScript error.") {
+                                log('❌ Erro ao executar Set In/Out', true);
+                                log('💡 Verifique se há clipes selecionados no painel Project', true);
+                                
+                                // Alerta de erro
+                                showErrorAlert(
+                                    "Set In/Out",
+                                    `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                    Não foi possível executar o script.<br><br>
+                                    <span style="color:#ffcc99; font-size:13px;">💡 Verifique se há clips selecionados no painel Project.</span>`,
+                                    "../assets/icon-set-inout.png"
+                                );
+                                return;
+                            }
+                            
+                            try {
+                                // Tentar parsear o resultado (agora como string JSON)
+                                const result = JSON.parse(resultStr);
+                                
+                                // Lógica simplificada: Se tiver status=sucesso, é sucesso
+                                if (result.status === "sucesso") {
+                                    log('✅ Set In/Out executado com sucesso!');
+                                    if (result.mensagem) {
+                                        log(`✅ ${result.mensagem}`);
+                                    }
+                                    
+                                    // Alerta de sucesso
+                                    showSuccessAlert(
+                                        "Set In/Out", 
+                                        `<span style="font-size:15px">✅ <b>Operação concluída!</b></span><br><br>
+                                        ${result.mensagem}<br>
+                                        <span style="color:#8ff;">Duração definida: ${duration} segundos</span>`,
+                                        "../assets/icon-set-inout.png"
+                                    );
+                                } else {
+                                    // Qualquer outro status é erro
+                                    log('❌ Erro ao executar Set In/Out', true);
+                                    if (result.mensagem) {
+                                        log(`💡 ${result.mensagem}`, true);
+                                    } else {
+                                        log('💡 Verifique se há clipes selecionados no painel Project', true);
+                                    }
+                                    
+                                    // Alerta de erro
+                                    showErrorAlert(
+                                        "Set In/Out",
+                                        `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                        ${result.mensagem || 'Erro ao definir pontos In/Out'}<br><br>
+                                        <span style="color:#ffcc99; font-size:13px;">💡 Verifique se há clips selecionados no painel Project.</span>`,
+                                        "../assets/icon-set-inout.png"
+                                    );
+                                }
+                            } catch (e) {
+                                // Se não puder parsear, exibir o resultado como está
+                                log('✅ Set In/Out executado!');
+                                log(`Resultado: ${resultStr}`);
+                                
+                                // Alerta com informação básica
+                                showInfoAlert(
+                                    "Set In/Out",
+                                    `<span style="font-size:15px">ℹ️ <b>Operação concluída</b></span><br><br>
+                                    A operação foi concluída, mas não foi possível interpretar o resultado.<br>
+                                    <span style="color:#8ff;">Duração definida: ${duration} segundos</span>`,
+                                    "../assets/icon-set-inout.png"
+                                );
+                            }
+                        });
+                    } else {
+                        log('❌ Script setInOut.jsx não encontrado em: ' + setInOutJsxPath, true);
+                        
+                        // Alerta de arquivo não encontrado
+                        showErrorAlert(
+                            "Erro no Sistema",
+                            `<span style="font-size:15px">❌ <b>Arquivo não encontrado</b></span><br><br>
+                            O arquivo de script não foi encontrado:<br>
+                            <code>${setInOutJsxPath}</code><br><br>
+                            Verifique a instalação da extensão.`,
+                            "../assets/icon-error.png"
+                        );
+                    }
+                } catch (e) {
+                    log('❌ Erro ao verificar script: ' + e.message, true);
+                    
+                    // Alerta de erro de sistema
+                    showErrorAlert(
+                        "Erro no Sistema",
+                        `<span style="font-size:15px">❌ <b>Erro interno</b></span><br><br>
+                        A função "Set In/Out" encontrou um erro:<br>
+                        <code>${e.message}</code>`,
+                        "../assets/icon-error.png"
+                    );
+                }
+            });
+            
+            // Implementação do botão Delete Markers
+            document.getElementById('deleteAudioMarkersBtn').addEventListener('click', function() {
+                log('🧹 Iniciando Delete Markers...');
+                
+                const deleteMarkJsxPath = extensionPath + '/jsx/deleteMark.jsx';
+                
+                try {
+                    const fs = require('fs');
+                    if (fs.existsSync(deleteMarkJsxPath)) {
+                        log('✅ Script deleteMark.jsx encontrado, executando...');
+                        
+                        // Carregar e executar o script JSX
+                        csInterface.evalScript(`$.evalFile("${deleteMarkJsxPath.replace(/\\/g, '\\\\')}")`, function(result) {
+                            if (result && result !== "EvalScript error.") {
+                                try {
+                                    // Tentar parsear o resultado como JSON
+                                    const deleteResult = JSON.parse(result);
+                                    log('✅ Delete Markers executado com sucesso!');
+                                    log(deleteResult.message);
+                                    
+                                    if (deleteResult.success) {
+                                        // Exibir alerta personalizado de sucesso
+                                        showSuccessAlert(
+                                            "Delete Markers", 
+                                            `<span style="font-size:15px">✅ <b>Operação concluída!</b></span><br><br>
+                                            ${deleteResult.message}`,
+                                            "../assets/icon-delete-markers.png"
+                                        );
+                                    } else {
+                                        // Exibir alerta personalizado de aviso
+                                        showWarningAlert(
+                                            "Delete Markers",
+                                            `<span style="font-size:15px">⚠️ <b>Atenção</b></span><br><br>
+                                            ${deleteResult.message}`,
+                                            "../assets/icon-delete-markers.png"
+                                        );
+                                    }
+                                } catch (e) {
+                                    log('❌ Erro ao processar resultado: ' + e.message, true);
+                                    log('Resultado original: ' + result);
+                                    
+                                    // Caso não consiga processar JSON, mostrar resultado como está
+                                    showInfoAlert(
+                                        "Delete Markers",
+                                        `<span style="font-size:15px">ℹ️ <b>Resultado</b></span><br><br>
+                                        ${result}`,
+                                        "../assets/icon-delete-markers.png"
+                                    );
+                                }
+                            } else {
+                                log('❌ Erro ao executar Delete Markers', true);
+                                log('💡 Verifique se há clipes de áudio selecionados na timeline', true);
+
+                                // Exibir alerta personalizado de erro
+                                showErrorAlert(
+                                    "Delete Markers",
+                                    `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                    Verifique se há clipes de áudio selecionados na timeline.`,
+                                    "../assets/icon-delete-markers.png"
+                                );                                
+                            }
+                        });
+                    } else {
+                        log('❌ Script deleteMark.jsx não encontrado em: ' + deleteMarkJsxPath, true);
+                        showErrorAlert(
+                            "Erro no Sistema",
+                            `<span style="font-size:15px">❌ <b>Arquivo não encontrado</b></span><br><br>
+                            O arquivo de script não foi encontrado:<br>
+                            <code>${deleteMarkJsxPath}</code><br><br>
+                            Verifique a instalação da extensão.`,
+                            "../assets/icon-error.png"
+                        );
+                    }
+                } catch (e) {
+                    log('❌ Erro ao verificar script: ' + e.message, true);
+                    showErrorAlert(
+                        "Erro no Sistema",
+                        `<span style="font-size:15px">❌ <b>Erro interno</b></span><br><br>
+                        A função "Delete Markers" encontrou um erro:<br>
+                        <code>${e.message}</code>`,
+                        "../assets/icon-error.png"
+                    );
+                }
+            });
+            
+            // Botão Clear In/Out - atualizar implementação
+            document.getElementById('clearInOutBtn').addEventListener('click', function() {
+                log('🧽 Iniciando Clear In/Out...');
+                
+                const clearInOutJsxPath = extensionPath + '/jsx/clearInOutB.jsx';
+                
+                try {
+                    const fs = require('fs');
+                    if (fs.existsSync(clearInOutJsxPath)) {
+                        log('✅ Script clearInOutB.jsx encontrado, executando...');
+                        
+                        // Carregar e executar o script JSX
+                        csInterface.evalScript(`$.evalFile("${clearInOutJsxPath.replace(/\\/g, '\\\\')}")`, function(result) {
+                            if (result && result !== "EvalScript error.") {
+                                try {
+                                    // Tentar parsear o resultado como JSON
+                                    const resultObj = JSON.parse(result);
+                                    
+                                    if (resultObj.status === "sucesso") {
+                                        log(`✅ Clear In/Out executado com sucesso!`);
+                                        log(`📊 ${resultObj.mensagem}`);
+                                        
+                                        // Adicionar alerta de sucesso
+                                        showSuccessAlert(
+                                            "Clear In/Out", 
+                                            `<span style="font-size:15px">✅ <b>Operação concluída!</b></span><br><br>
+                                            ${resultObj.mensagem}<br>
+                                            ${resultObj.sucessos > 0 ? `<span style="color:#8ff;">Clips processados: ${resultObj.sucessos}</span>` : ''}`,
+                                            "../assets/icon-clear-inout.png"
+                                        );
+                                    } else {
+                                        log(`❌ ${resultObj.mensagem}`, true);
+                                        
+                                        // Adicionar alerta de erro
+                                        showErrorAlert(
+                                            "Clear In/Out",
+                                            `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                            ${resultObj.mensagem}<br><br>
+                                            <span style="color:#ffcc99; font-size:13px;">💡 Verifique se há clips selecionados no painel Project.</span>`,
+                                            "../assets/icon-clear-inout.png"
+                                        );
+                                    }
+                                } catch (e) {
+                                    // Se não for JSON, exibir como texto
+                                    log(`✅ Clear In/Out executado: ${result}`);
+                                    
+                                    // Alerta com resultado bruto
+                                    showInfoAlert(
+                                        "Clear In/Out",
+                                        `<span style="font-size:15px">ℹ️ <b>Operação concluída</b></span><br><br>
+                                        Resultado: ${result}`,
+                                        "../assets/icon-clear-inout.png"
+                                    );
+                                }
+                            } else {
+                                log('❌ Erro ao executar Clear In/Out', true);
+                                log('💡 Verifique se há clipes selecionados no painel Project', true);
+                                
+                                // Alerta de erro
+                                showErrorAlert(
+                                    "Clear In/Out",
+                                    `<span style="font-size:15px">❌ <b>Falha na operação</b></span><br><br>
+                                    Erro ao executar o script.<br><br>
+                                    <span style="color:#ffcc99; font-size:13px;">💡 Verifique se há clipes selecionados no painel Project.</span>`,
+                                    "../assets/icon-clear-inout.png"
+                                );
+                            }
+                        });
+                    } else {
+                        log('❌ Script clearInOutB.jsx não encontrado em: ' + clearInOutJsxPath, true);
+                        
+                        // Alerta de arquivo não encontrado
+                        showErrorAlert(
+                            "Erro no Sistema",
+                            `<span style="font-size:15px">❌ <b>Arquivo não encontrado</b></span><br><br>
+                            O arquivo de script não foi encontrado:<br>
+                            <code>${clearInOutJsxPath}</code><br><br>
+                            Verifique a instalação da extensão.`,
+                            "../assets/icon-error.png"
+                        );
+                    }
+                } catch (e) {
+                    log('❌ Erro ao verificar script: ' + e.message, true);
+                    
+                    // Alerta de erro de sistema
+                    showErrorAlert(
+                        "Erro no Sistema",
+                        `<span style="font-size:15px">❌ <b>Erro interno</b></span><br><br>
+                        A função "Clear In/Out" encontrou um erro:<br>
+                        <code>${e.message}</code>`,
+                        "../assets/icon-error.png"
+                    );
+                }
+            });
+        });
+
+        
+        // Função para executar VoidTrim - VERSÃO SIMPLIFICADA  
+        function executeVoidTrim() {
+            log('✂️ Starting VoidTrim process...');
+            
+            if (!voidtrim) {
+                log('❌ VoidTrim module not available', true);
+                return;
+            }
+            
+            const script = `getSelectedAudioFilePath();`;
+            
+            csInterface.evalScript(script, function(audioPath) {
+                if (audioPath && audioPath !== "EvalScript error." && audioPath !== '""') {
+                    const filePath = audioPath.replace(/"/g, '');
+                    const threshold = -30; // dB
+                    const minSilenceDur = 0.5; // segundos
+                    
+                    log('🔇 Analyzing real silence in: ' + path.basename(filePath));
+                    
+                    // Use Node.js para análise REAL de silêncio
+                    voidtrim.removeSilence(filePath, threshold, minSilenceDur, function(result) {
+                        if (result.success) {
+                            log(`🎉 ${result.message}`);
+                            
+                            if (result.silenceSegments.length > 0) {
+                                result.silenceSegments.forEach((segment, index) => {
+                                    log(`🔇 Silêncio ${index + 1}: ${segment.start.toFixed(2)}s - ${segment.end.toFixed(2)}s (${segment.duration.toFixed(2)}s)`);
+                                });
+                                
+                                // Envie os segmentos reais para o JSX
+                                const jsxScript = `removeSilenceSegments(${JSON.stringify(result.silenceSegments)});`;
+                                csInterface.evalScript(jsxScript, function(jsxResult) {
+                                    if (jsxResult && jsxResult !== "EvalScript error.") {
+                                        log(`✂️ Segmentos de silêncio reais processados no JSX`);
+                                } else {
+                                    log('💥 Erro ao processar silêncio no JSX', true);
+                                }
+                            });
+                        } else {
+                            log('🎵 Nenhum segmento de silêncio encontrado com os parâmetros atuais');
+                        }
+                        } else {
+                            log(`❌ ${result.message}`, true);
+                        }
+                    });
+                } else {
+                    log('💥 Nenhum arquivo de áudio selecionado ou arquivo não acessível', true);
+                    log('💡 Selecione um clip de áudio WAV na timeline', true);
+                }
+            });
+        }
+    </script>
+    <script>
+        // Mostrar/ocultar info da Smart Tools
+        document.addEventListener('DOMContentLoaded', function() {
+            var infoBtn = document.getElementById('smartToolsInfoBtn');
+            var infoBox = document.getElementById('smartToolsInfoBox');
+            if (infoBtn && infoBox) {
+                infoBtn.addEventListener('click', function() {
+                    if (infoBox.style.display === 'none' || infoBox.style.display === '') {
+                        infoBox.style.display = 'block';
+                    } else {
+                        infoBox.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+
+<script>
+    /**
+     * Sistema padronizado de alertas para PrFastTool
+     * Tipos disponíveis: success, error, warning, info
+     */
+    
+    // Inicializar o sistema de alertas
+    function initAlertSystem() {
+        // Fechar alerta ao clicar no X
+        document.getElementById('closeAlert').addEventListener('click', function() {
+            document.getElementById('prFastToolAlert').style.display = 'none';
+        });
+        
+        // Fechar alerta ao clicar no botão OK
+        document.getElementById('alertOkBtn').addEventListener('click', function() {
+            document.getElementById('prFastToolAlert').style.display = 'none';
+        });
+        
+        // Fechar alerta ao pressionar ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('prFastToolAlert').style.display === 'block') {
+                document.getElementById('prFastToolAlert').style.display = 'none';
+            }
+        });
+    }
+    
+    // Mostrar alerta com tipo específico
+    function showAlert(type, title, message, toolIcon) {
+        // Obter elementos
+        const alertElement = document.getElementById('prFastToolAlert');
+        const headerElement = alertElement.querySelector('.alert-header');
+        const titleElement = document.getElementById('alertTitle');
+        const messageElement = document.getElementById('alertMessage');
+        const iconElement = document.getElementById('alertIcon');
+        
+        // Definir classe do header baseado no tipo
+        headerElement.className = 'alert-header ' + type;
+        
+        // Definir título e mensagem
+        titleElement.textContent = title;
+        messageElement.innerHTML = message;
+        
+        // Definir ícone
+        if (toolIcon) {
+            iconElement.src = toolIcon;
+        } else {
+            // Usar ícones padrão baseados no tipo
+            iconElement.src = `../assets/icon-${type}.png`;
+        }
+        
+        // Exibir alerta
+        alertElement.style.display = 'block';
+        
+        // Focar no botão OK
+        setTimeout(() => {
+            document.getElementById('alertOkBtn').focus();
+        }, 100);
+    }
+    
+    // Funções específicas para cada tipo de alerta
+    function showSuccessAlert(title, message, toolIcon) {
+        showAlert('success', title, message, toolIcon);
+    }
+    
+    function showErrorAlert(title, message, toolIcon) {
+        showAlert('error', title, message, toolIcon);
+    }
+    
+    function showWarningAlert(title, message, toolIcon) {
+        showAlert('warning', title, message, toolIcon);
+    }
+    
+    function showInfoAlert(title, message, toolIcon) {
+        showAlert('info', title, message, toolIcon);
+    }
+    
+    // Inicializar o sistema de alertas quando a página carregar
+    document.addEventListener('DOMContentLoaded', initAlertSystem);
+</script>
+    <script>
+    // Função para abrir a aba Smart Tools
+    function openSmartToolsTab() {
+        try {
+            // Remover classe ativa de todos os botões de aba
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Definir aba Smart Tools como ativa
+            var smartToolsBtn = document.querySelector('.tab-button[data-tab="smarttools"]');
+            if (smartToolsBtn) smartToolsBtn.classList.add('active');
+            
+            // Esconder todos os conteúdos de abas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar conteúdo da aba Smart Tools
+            var smartToolsContent = document.getElementById('smarttools-tab');
+            if (smartToolsContent) smartToolsContent.classList.add('active');
+            
+            log('✅ Smart Tools tab ativada via console');
+            return true;
+        } catch (e) {
+            log('❌ Erro ao ativar aba Smart Tools: ' + e.message, true);
+            return false;
+        }
+    }
+    </script>
+
+</body>
+</html>
